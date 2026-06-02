@@ -64,6 +64,12 @@ Si deseas compilar el paquete por tu cuenta o contribuir al desarrollo, necesita
    rpmsign --addsign --define "_gpg_name <TU_ID_DE_CLAVE>" RPMS/*.rpm
    ```
 
+## 🌍 Traducciones
+
+Puedes ayudar a traducir este proyecto usando [Weblate](https://hosted.weblate.org/projects/harbour-weather-backend-visualcrossing)
+
+[![Estado de la traducción](https://hosted.weblate.org/widget/harbour-weather-backend-visualcrossing/harbour-weather-backend-visualcrossing/multi-auto.svg)](https://hosted.weblate.org/engage/harbour-weather-backend-visualcrossing/?utm_source=widget)
+
 ## 🙏 Créditos y Atribuciones
 
 - Datos meteorológicos proporcionados por [Visual Crossing](https://www.visualcrossing.com/).

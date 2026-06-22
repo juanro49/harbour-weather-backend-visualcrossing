@@ -73,7 +73,6 @@ QtObject {
     function currentWeatherUrl(weather) {
         return visualCrossingApi + weather.latitude + "," + weather.longitude
             + "?unitGroup=metric&include=current,days"
-            + "&elements=datetimeEpoch,temp,tempmax,tempmin,feelslike,conditions,icon,cloudcover,precip,precipprob,windspeed,winddir,humidity,pressure"
             + "&lang=" + getLanguage() + "&contentType=json&key="
     }
 
@@ -84,7 +83,6 @@ QtObject {
     function forecastUrl(weather, isHourly) {
         return visualCrossingApi + weather.latitude + "," + weather.longitude
             + "?unitGroup=metric&include=days,hours"
-            + "&elements=datetimeEpoch,temp,tempmax,tempmin,feelslike,conditions,icon,cloudcover,precip,precipprob,windspeed,winddir,humidity,pressure"
             + "&lang=" + getLanguage() + "&contentType=json&key="
     }
 
@@ -94,18 +92,6 @@ QtObject {
         // GeoNames usa 'username=xxxx' y no reconoce la clave de Visual Crossing.
         // Forzamos que la URL termine en '&token=' para que la clave se añada ahí
         // y no rompa el parámetro 'username'.
-        if (url.indexOf("&token=") === -1) {
-            url += "&token="
-        }
-        return url
-    }
-
-    function reverseLocationResponseType() {
-        return "json"
-    }
-
-    function reverseLocationUrl(latitude, longitude, language) {
-        var url = GeoNames.reverseLocationUrl(latitude, longitude, language)
         if (url.indexOf("&token=") === -1) {
             url += "&token="
         }
@@ -168,25 +154,10 @@ QtObject {
                 var dailyWeather = getWeatherData(dayData)
                 dailyWeather.timestamp = new Date(dayData.datetimeEpoch * 1000)
                 dailyWeather.accumulatedPrecipitation = dayData.precip || 0
-                dailyWeather.maximumWindSpeed = Math.round(dayData.windspeed)
+                dailyWeather.maximumWindSpeed = Math.round(dayData.windspeed || 0)
                 dailyWeather.windDirection = dayData.winddir || 0
                 dailyWeather.high = Math.floor(dayData.tempmax)
                 dailyWeather.low = Math.round(dayData.tempmin)
-
-                var hours = []
-                if (dayData.hours) {
-                    for (var h = 0; h < dayData.hours.length; h++) {
-                        var hourData = dayData.hours[h]
-                        var weatherH = getWeatherData(hourData)
-                        weatherH.timestamp = new Date(hourData.datetimeEpoch * 1000)
-                        weatherH.temperature = hourData.temp
-                        hours.push(weatherH)
-                    }
-                }
-                if (hours.length > 0) {
-                    BackendUtils.normalizeHourlyTemperatures(hours, hours.length - 1, 0, true)
-                }
-                dailyWeather.hours = hours
 
                 weatherData.push(dailyWeather)
             }
@@ -196,10 +167,6 @@ QtObject {
 
     function handleSearchLocationResult(result) {
         return GeoNames.handleSearchLocationResult(result)
-    }
-
-    function handleReverseLocationResult(result, latitude, longitude) {
-        return GeoNames.handleReverseLocationResult(result, latitude, longitude)
     }
 
     function handleObservationResult(result) {
@@ -274,14 +241,7 @@ QtObject {
         return {
             "description": data.conditions || WeatherTypeDescriptions.description(symbol),
             "weatherType": symbol,
-            "cloudiness": data.cloudcover !== undefined ? data.cloudcover : 0,
-            "precipitation": data.precip || 0,
-            "precipitationProbability": data.precipprob || 0,
-            "windSpeed": Math.round(data.windspeed || 0),
-            "windDirection": data.winddir || 0,
-            "humidity": data.humidity || 0,
-            "pressure": data.pressure || 0,
-            "feelsLikeTemperature": data.feelslike !== undefined ? data.feelslike : (data.temp || 0)
+            "cloudiness": data.cloudcover !== undefined ? data.cloudcover : 0
         }
     }
 }
